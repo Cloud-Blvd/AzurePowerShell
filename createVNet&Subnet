@@ -1,0 +1,10 @@
+$Location="EastUS" 
+New-AzResourceGroup -Name vm-networks -Location $Location
+$Subnet=New-AzVirtualNetworkSubnetConfig -Name default -AddressPrefix 10.0.0.0/24
+New-AzVirtualNetwork -Name myVnet -ResourceGroupName vm-networks -Location $Location -AddressPrefix 10.0.0.0/16 -Subnet $Subnet
+
+New-AzVm -ResourceGroupName "vm-networks" -Name "dataProcStage1" -VirtualNetworkName "myVnet" -SubnetName "default" -image "Win2016Datacenter" -Size "Standard_B1S"
+
+$nic = Get-AzNetworkInterface -Name dataProcStage1 -ResourceGroup vm-networks
+$nic.IpConfigurations.publicipaddress.id = $null
+Set-AzNetworkInterface -NetworkInterface $nic
